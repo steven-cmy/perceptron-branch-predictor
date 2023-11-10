@@ -17,3 +17,11 @@ scons -j 8 build/RISCV/gem5.opt CPU_MODELS='AtomicSimpleCPU,O3CPU,TimingSimpleCP
 cd $REPO
 gem5-baseline/build/RISCV/gem5.opt gem5-baseline/configs/learning_gem5/part1/simple.py
 ```
+### Integrating the predictor
+```
+TODO
+```
+### Testing and Evaluating
+```
+TODO
+```
