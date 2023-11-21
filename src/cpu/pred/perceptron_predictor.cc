@@ -4,7 +4,7 @@ PerceptronBranchPredictor::PerceptronBranchPredictor(const PerceptronBranchPredi
     : BPredUnit(params)
 {
     N = params->perceptron_depth;
-    PRIME = largestPrimeLessThan(N);
+    PRIME = (isPrime(params->prime) ? params->prime : largestPrimeLessThan(N));
 
     // Initialize your predictor's data structures here
     perceptrons = std::vector<Perceptron>(N, Perceptron(N));
