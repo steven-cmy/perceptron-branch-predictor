@@ -37,7 +37,33 @@ void PerceptronBranchPredictor::update(ThreadID tid, Addr branchAddr, bool taken
                                        void *bpHistory, bool squashed,
                                        const StaticInstPtr &inst, Addr corrTarget)
 {
-    // Implement the update logic here
+    updatePerceptron(branchAddr, taken, bpHistory);
+}
+
+void PerceptronBranchPredictor::uncondBranch(ThreadID tid, Addr pc, void *&bp_history)
+{
+    BPHistory *history = static_cast<BPHistory *>(bp_history);
+    for (int i = N - 1; i > 0; i--)
+    {
+        history->taken[i] = history->taken[i - 1];
+    }
+    history->taken[0] = true;
+}
+
+void PerceptronBranchPredictor::btbUpdate(ThreadID tid, Addr instPC, void *&bp_history)
+{
+    updatePerceptron(instPC, false, bp_history);
+}
+
+void PerceptronBranchPredictor::squash(ThreadID tid, void *bpHistory)
+{
+    bpHistory = static_cast<BPHistory *>(bpHistory);
+    delete[] bpHistory;
+    bpHistory = new BPHistory(N);
+}
+
+void PerceptronBranchPredictor::updatePerceptron(Addr branchAddr, bool taken, void *bpHistory)
+{
     assert(bpHistory);
 
     BPHistory *history = static_cast<BPHistory *>(bpHistory);
@@ -54,19 +80,6 @@ void PerceptronBranchPredictor::update(ThreadID tid, Addr branchAddr, bool taken
         history->taken[i] = history->taken[i - 1];
     }
     history->taken[0] = taken;
-}
-
-void uncondBranch(ThreadID tid, Addr pc, void *&bp_history)
-{
-    // Implement the function
-}
-
-void btbUpdate(ThreadID tid, Addr instPC, void *&bp_history)
-{
-    // Implement the function
-}
-void squash(ThreadID tid, void *bpHistory)
-{
 }
 
 PerceptronBranchPredictor *
