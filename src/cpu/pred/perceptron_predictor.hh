@@ -67,6 +67,8 @@ public:
     void btbUpdate(ThreadID tid, Addr instPC, void *&bp_history) override;
 
 protected:
+    void updatePerceptron(Addr branchAddr, bool taken, void *bpHistory);
+
     std::vector<Perceptron> perceptrons;
     unsigned N;
     unsigned PRIME;
