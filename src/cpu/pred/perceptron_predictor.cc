@@ -57,8 +57,7 @@ void PerceptronBranchPredictor::btbUpdate(ThreadID tid, Addr instPC, void *&bp_h
 
 void PerceptronBranchPredictor::squash(ThreadID tid, void *bpHistory)
 {
-    bpHistory = static_cast<BPHistory *>(bpHistory);
-    delete[] bpHistory;
+    delete[] static_cast<BPHistory *>(bpHistory);
     bpHistory = new BPHistory(N);
 }
 
