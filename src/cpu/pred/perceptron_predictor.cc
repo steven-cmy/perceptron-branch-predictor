@@ -1,17 +1,43 @@
 #include "cpu/pred/perceptron_predictor.hh"
 
 PerceptronBranchPredictor::PerceptronBranchPredictor(const PerceptronBranchPredictorParams *params)
-    : BPredUnit(params)
+    : BPredUnit(params),
+      perceptrons(params->perceptron_depth, Perceptron(params->perceptron_depth)),
+      N(params->perceptron_depth),
+      PRIME(params->prime)
 {
-    N = params->perceptron_depth;
-    PRIME = (isPrime(params->prime) ? params->prime : largestPrimeLessThan(N));
+    if (!(isPrime(PRIME)))
+        fatal("Prime is not actually a prime number.\n");
 
-    // Initialize your predictor's data structures here
-    perceptrons = std::vector<Perceptron>(N, Perceptron(N));
+    // PRIME = (isPrime(params->prime) ? params->prime : largestPrimeLessThan(N));
+
     // for (auto &perceptron : perceptrons)
     // {
     //     perceptron = Perceptron(N);
     // }
+}
+
+void PerceptronBranchPredictor::uncondBranch(ThreadID tid, Addr pc, void *&bpHistory)
+{
+    if (!bpHistory)
+    {
+        bpHistory = new BPHistory(N);
+    }
+    BPHistory *history = static_cast<BPHistory *>(bpHistory);
+    insert(*history, true);
+    // for (int i = N - 1; i > 0; i--)
+    // {
+    //     history->taken[i] = history->taken[i - 1];
+    // }
+    // history->taken[0] = true;
+}
+
+void PerceptronBranchPredictor::squash(ThreadID tid, void *bpHistory)
+{
+    assert(bpHistory);
+    BPHistory *history = static_cast<BPHistory *>(bpHistory);
+    delete history;
+    bpHistory = new BPHistory(N);
 }
 
 bool PerceptronBranchPredictor::lookup(ThreadID tid, Addr branchAddr, void *&bpHistory)
@@ -23,31 +49,14 @@ bool PerceptronBranchPredictor::lookup(ThreadID tid, Addr branchAddr, void *&bpH
     {
         bpHistory = new BPHistory(N);
     }
-    BPHistory *h = static_cast<BPHistory *>(bpHistory);
+    BPHistory *history = static_cast<BPHistory *>(bpHistory);
 
     int y = p.bias;
     for (unsigned n = 0; n < N; n++)
     {
-        y += (h->taken[n] ? p.weight[n] : -p.weight[n]);
+        y += (history->taken[n] ? p.weight[n] : -p.weight[n]);
     }
     return ((y < 0) ? false : true);
-}
-
-void PerceptronBranchPredictor::update(ThreadID tid, Addr branchAddr, bool taken,
-                                       void *bpHistory, bool squashed,
-                                       const StaticInstPtr &inst, Addr corrTarget)
-{
-    updatePerceptron(branchAddr, taken, bpHistory);
-}
-
-void PerceptronBranchPredictor::uncondBranch(ThreadID tid, Addr pc, void *&bp_history)
-{
-    BPHistory *history = static_cast<BPHistory *>(bp_history);
-    for (int i = N - 1; i > 0; i--)
-    {
-        history->taken[i] = history->taken[i - 1];
-    }
-    history->taken[0] = true;
 }
 
 void PerceptronBranchPredictor::btbUpdate(ThreadID tid, Addr instPC, void *&bp_history)
@@ -55,11 +64,11 @@ void PerceptronBranchPredictor::btbUpdate(ThreadID tid, Addr instPC, void *&bp_h
     updatePerceptron(instPC, false, bp_history);
 }
 
-void PerceptronBranchPredictor::squash(ThreadID tid, void *bpHistory)
+void PerceptronBranchPredictor::update(ThreadID tid, Addr branchAddr, bool taken,
+                                       void *bpHistory, bool squashed,
+                                       const StaticInstPtr &inst, Addr corrTarget)
 {
-    bpHistory = static_cast<BPHistory *>(bpHistory);
-    delete[] bpHistory;
-    bpHistory = new BPHistory(N);
+    updatePerceptron(branchAddr, taken, bpHistory);
 }
 
 void PerceptronBranchPredictor::updatePerceptron(Addr branchAddr, bool taken, void *bpHistory)
@@ -75,11 +84,7 @@ void PerceptronBranchPredictor::updatePerceptron(Addr branchAddr, bool taken, vo
         p.weight[n] += ((history->taken[n] == taken) ? 1 : -1);
     }
 
-    for (int i = N - 1; i > 0; i--)
-    {
-        history->taken[i] = history->taken[i - 1];
-    }
-    history->taken[0] = taken;
+    insert(*history, taken);
 }
 
 PerceptronBranchPredictor *

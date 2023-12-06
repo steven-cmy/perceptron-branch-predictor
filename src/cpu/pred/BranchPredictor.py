@@ -756,4 +756,4 @@ class PerceptronBranchPredictor(BranchPredictor):
     cxx_header = 'cpu/pred/perceptron_predictor.hh'
     
     perceptron_depth = Param.Unsigned(64, "Depth of the perceptron")
-    prime = Param.Unsigned("Prime used to hash")
+    prime = Param.Unsigned(61, "Prime used to hash")
