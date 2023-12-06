@@ -14,7 +14,7 @@ if ! [ -d "spec2017" ]; then
 fi
 
 cd spec2017
-cp $REPO/gcc-linux-x86.cfg config/gcc-linux-x86.cfg
+cp $REPO/config/gcc-linux-x86.cfg config/gcc-linux-x86.cfg
 source ./shrc
 bin/packagetools gcc-linux-x86
 

@@ -1,9 +1,23 @@
 # perceptron-branch-predictor
 Implemtation of a Perceptron Branch Predictor on gem5 simulator.
 ## Getting Started
-### Build gem5
+
+### Get gem5
 ``` bash
 git clone git@github.com:CMPT-7ARCH-SFU/gem5-baseline.git gem5
+# Alternativly you can use official gem5
+# git clone https://github.com/gem5/gem5 gem5
+export M5_PATH=gem5
+```
+
+### Integrating the predictor
+``` bash
+python3 install.py gem5/src src
+# This will hard link our code to gem5's src
+```
+
+### Build gem5
+``` bash
 cd gem5 
 ## Stop git tracking large file changes. Add --global if you want to turn off for all.
 git config oh-my-zsh.hide-info 1
@@ -11,13 +25,23 @@ git config oh-my-zsh.hide-info 1
 # on 10 cores it may take 15 minutes
 # Open a tmux session. 
 scons build/X86/gem5.opt -j 8
+
+# every time src change you need rebuild
 ```
 
 <!-- scons -j 8 build/RISCV/gem5.opt CPU_MODELS='AtomicSimpleCPU,O3CPU,TimingSimpleCPU,MinorCPU' --gold-linker -->
 
 ### Using SPEC 2017
 
-https://www.youtube.com/watch?v=E7-w93Udeb8&list=LL&index=1
+#### Automaic with script
+
+``` bash
+# adjust benchmarks in the script if you want
+./build_benchmarks.sh
+# binaries will be copied to $REPO/bin
+```
+
+#### Manual way
 
 To install SPEC 2017
 ``` bash
@@ -62,14 +86,13 @@ To run benchmark with gem5
 ### Running gem5
 ``` bash
 cd $REPO
-gem5-baseline/build/RISCV/gem5.opt gem5-baseline/configs/learning_gem5/part1/simple.py
+$M5_PATH/build/X86/gem5.opt gem5/configs/learning_gem5/part1/simple.py
 ```
-### Integrating the predictor
-``` bash
-python3 install.py gem5/src src
-# rebuild gem5 after changes
-```
+
 ### Testing and Evaluating
 ``` bash
-# TODO
+export M5_PATH=gem5
+# adjust config in the py file if needed
+python3 run_benchamrks.py 8
+# TODO add evaluation
 ```
