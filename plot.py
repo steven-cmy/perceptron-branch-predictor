@@ -96,7 +96,7 @@ def doplot_benchmarks(benchmarks, stat, norm=True):
                (len(cpu_types)*len(branch_predictors)-1)/2, new_names, rotation=40, ha='right')
 
 
-stats = ['accuracy', 'ipc']
+stats = ['accuracy','ipc', 'cpi']
 for stat in stats:
     fig_size = plt.rcParams["figure.figsize"]
     fig_size[0] = 10
