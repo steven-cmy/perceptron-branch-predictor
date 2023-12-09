@@ -29,16 +29,15 @@ scons build/X86/gem5.opt -j 8
 # every time src change you need rebuild
 ```
 
-<!-- scons -j 8 build/RISCV/gem5.opt CPU_MODELS='AtomicSimpleCPU,O3CPU,TimingSimpleCPU,MinorCPU' --gold-linker -->
-
 ### Using SPEC 2017
 
 #### Automaic with script
 
 ``` bash
 # adjust benchmarks in the script if you want
+# this will take a LONG time
 ./build_benchmarks.sh
-# binaries will be copied to $REPO/bin
+# workload instructions will be output to $REPO/bin
 ```
 
 #### Manual way
@@ -94,5 +93,7 @@ $M5_PATH/build/X86/gem5.opt gem5/configs/learning_gem5/part1/simple.py
 export M5_PATH=gem5
 # adjust config in the py file if needed
 python3 run_benchamrks.py 8
-# TODO add evaluation
+# evaluation
+export REPO=$(pwd)
+python3 plot.py
 ```

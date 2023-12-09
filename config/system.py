@@ -58,6 +58,5 @@ class BaseTestSystem(System):
     def totalInsts(self):
         return sum([cpu.totalInsts() for cpu in self.cpu])
 
-    def setTestBinary(self, binary_path):
-        self.cpu.workload = Process(cmd=[binary_path])
-        self.cpu.createThreads()
+    def addTestWorkload(self, pid, cmd, cwd):
+        self.cpu.workload.append(Process(pid=pid, cmd=cmd, cwd=cwd))

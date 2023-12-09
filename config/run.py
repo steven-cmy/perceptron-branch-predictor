@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import argparse
+import os
 import m5
 from m5.objects import TimingSimpleCPU, DerivO3CPU
 from m5.objects import PerceptronBranchPredictor, LocalBP, BiModeBP, TournamentBP
@@ -22,11 +23,7 @@ parser.add_argument('pdepth', type=int, default=64,
                     help="Depth of perceptron when using perceptron branch predictor")
 parser.add_argument('pprime', type=int, default=61,
                     help="Prime number to determine index  when using perceptron branch predictor(ideally the largest prime smaller than depth)")
-parser.add_argument('binary', type=str, help="Path to binary to run")
-# parser.add_argument("--clock", action="store",
-#                       default='1GHz',
-#                       help = """Top-level clock for blocks running at system
-#                       speed""")
+parser.add_argument('workloads', type=str, help="Path to the workload to run")
 args = parser.parse_args()
 
 
@@ -38,8 +35,30 @@ class PBPTestSystem(BaseTestSystem):
 
 
 system = PBPTestSystem()
-system.setTestBinary(args.binary)
+
+i = len(valid_bp.keys())
+for k in valid_bp.keys():
+    if k == args.bp:
+        break
+    i -= 1
+
+bm_name = args.workloads
+wl_file = os.path.join(os.getenv('REPO'), 'bin', bm_name)
+cwd = os.path.join(os.getenv('REPO'), os.getenv('SPEC_PATH'),
+                   'benchspec', 'CPU', bm_name, 'run', 'run_base_refspeed_pbptest-m64.0000'if bm_name.endswith('s') else 'run_base_refrate_pbptest-m64.0000')
+os.chdir(cwd)
+workloads = []
+with open(wl_file, 'r') as workloadFile:
+    lines = workloadFile.readlines()
+    for line in lines:
+        if not line.startswith('#') and not line.startswith('specinvoke'):
+            cmd = line.split(' ')
+            pid = int(bm_name.split('.', 1)[0]+str(i))
+            system.addTestWorkload(pid, cmd, cwd)
+            break
+system.cpu.createThreads()
 root = Root(full_system=False, system=system)
+system.cpu.max_insts_any_thread = 2000000
 m5.instantiate()
 
 start_tick = m5.curTick()
