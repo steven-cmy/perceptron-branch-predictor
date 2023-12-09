@@ -19,11 +19,15 @@ source ./shrc
 bin/packagetools gcc-linux-x86
 
 benchamrks=("505.mcf_r" "520.omnetpp_r" "525.x264_r" "531.deepsjeng_r" "600.perlbench_s" "602.gcc_s" "605.mcf_s" "620.omnetpp_s" "625.x264_s" "631.deepsjeng_s")
+
 for benchmark in "${benchamrks[@]}"; do
     go $benchmark
     rm -r build
-    runcpu --fake --config gcc-linux-x86 $benchmark
-    cd build/build_base_pbptest-m64.0000
-    specmake -j 8 || specmake TARGET=${benchmark#*.} -j 8
-    cp ${benchmark#*.} $REPO/bin/${benchmark#*.}
+    rm -r run
+    runcpu --config gcc-linux-x86 --action setup ${benchmark}
+    if [[ $benchmark == *s ]]; then
+        cd run/run_base_refspeed_pbptest-m64.0000 && specinvoke -n >$REPO/bin/${benchmark}
+    else
+        cd run/run_base_refrate_pbptest-m64.0000 && specinvoke -n >$REPO/bin/${benchmark}
+    fi
 done
