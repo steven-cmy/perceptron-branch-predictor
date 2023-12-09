@@ -58,5 +58,5 @@ class BaseTestSystem(System):
     def totalInsts(self):
         return sum([cpu.totalInsts() for cpu in self.cpu])
 
-    def addTestWorkload(self, cmd, cwd):
-        self.cpu.workload.append(Process(cmd=cmd, cwd=cwd))
+    def addTestWorkload(self, pid, cmd, cwd):
+        self.cpu.workload.append(Process(pid=pid, cmd=cmd, cwd=cwd))

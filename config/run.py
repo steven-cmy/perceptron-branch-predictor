@@ -36,9 +36,11 @@ class PBPTestSystem(BaseTestSystem):
 
 system = PBPTestSystem()
 
-if not os.getenv("SPEC_PATH"):
-    print("Set SPEC Path!\n")
-    exit(1)
+i = len(valid_bp.keys())
+for k in valid_bp.keys():
+    if k == args.bp:
+        break
+    i -= 1
 
 bm_name = args.workloads
 wl_file = os.path.join(os.getenv('REPO'), 'bin', bm_name)
@@ -51,10 +53,12 @@ with open(wl_file, 'r') as workloadFile:
     for line in lines:
         if not line.startswith('#') and not line.startswith('specinvoke'):
             cmd = line.split(' ')
-            system.addTestWorkload(cmd, cwd)
+            pid = int(bm_name.split('.', 1)[0]+str(i))
+            system.addTestWorkload(pid, cmd, cwd)
+            break
 system.cpu.createThreads()
 root = Root(full_system=False, system=system)
-system.cpu.max_insts_any_thread = 1000000
+system.cpu.max_insts_any_thread = 2000000
 m5.instantiate()
 
 start_tick = m5.curTick()

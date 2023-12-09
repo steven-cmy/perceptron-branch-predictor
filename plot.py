@@ -7,7 +7,7 @@ if not os.getenv("REPO"):
     print("Set repo path\n")
     exit(1)
 
-workload_dir = os.getenv("REPO") +'/bin'
+workload_dir = os.getenv("REPO") + '/bin'
 datadir = os.getenv("REPO") + '/results/X86/run'
 outputdir = os.getenv("REPO") + '/plots'
 
@@ -22,7 +22,7 @@ def gem5GetStat(filename, stat):
         if (r.find(stat) != -1):
             start = r.find(stat) + len(stat) + 1
             end = r.find('#', start)
-            print(r[start:end])
+            # print(r[start:end])
             return float(r[start:end])
         else:
             return float(0.0)
@@ -63,7 +63,7 @@ df['ipc'] = df['instructions']/df['cycles']
 df['cpi'] = 1/df['ipc']
 df['accuracy'] = (df['totalPrediction'] -
                   df['incorrectPrediction'])/df['totalPrediction']
-print(df)
+# print(df)
 
 
 def draw_vertical_line(ax, xpos, ypos):
@@ -92,17 +92,19 @@ def doplot_benchmarks(benchmarks, stat, norm=True):
             plt.bar(0, 0, color='C'+str(c*4+b), label=cpu+'/'+bp)
     new_names = benchmarks
     # Arranging ticks on the X axis
-    plt.xticks(np.arange(len(new_names))*(len(cpu_types) *
-               len(branch_predictors)+1)+i/2, new_names, rotation=40, ha='right')
+    plt.xticks(np.arange(len(new_names))*(len(cpu_types)*len(branch_predictors)+1) +
+               (len(cpu_types)*len(branch_predictors)-1)/2, new_names, rotation=40, ha='right')
 
-stat = 'accuracy'
-fig_size = plt.rcParams["figure.figsize"]
-fig_size[0] = 10
-fig_size[1] = 5
-plt.rcParams["figure.figsize"] = fig_size
-fig1 = doplot_benchmarks(benchmarks,stat,norm=False)
-plt.ylabel(stat)
-plt.legend(loc=1, prop={'size': 8})
-plt.title('After')
-plt.tight_layout()
-plt.savefig(stat+'.png', format='png', dpi=600)
+
+stats = ['accuracy', 'ipc']
+for stat in stats:
+    fig_size = plt.rcParams["figure.figsize"]
+    fig_size[0] = 10
+    fig_size[1] = 5
+    plt.rcParams["figure.figsize"] = fig_size
+    fig1 = doplot_benchmarks(benchmarks, stat, norm=False)
+    # plt.ylabel(stat)
+    plt.legend(loc=1, prop={'size': 8})
+    plt.title(stat.capitalize())
+    plt.tight_layout()
+    plt.savefig(stat+'.png', format='png', dpi=600)
