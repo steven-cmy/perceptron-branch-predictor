@@ -757,3 +757,4 @@ class PerceptronBranchPredictor(BranchPredictor):
     
     perceptron_depth = Param.Unsigned(64, "Depth of the perceptron")
     prime = Param.Unsigned(61, "Prime used to hash")
+    saturation_limit = Param.Unsigned(32, "Limit to prevent excessive saturation")

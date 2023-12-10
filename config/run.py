@@ -23,6 +23,8 @@ parser.add_argument('pdepth', type=int, default=64,
                     help="Depth of perceptron when using perceptron branch predictor")
 parser.add_argument('pprime', type=int, default=61,
                     help="Prime number to determine index  when using perceptron branch predictor(ideally the largest prime smaller than depth)")
+parser.add_argument('satlimit', type=int, default=32,
+                    help="Saturation limits prevent the weights from growing too large")
 parser.add_argument('workloads', type=str, help="Path to the workload to run")
 args = parser.parse_args()
 
@@ -32,6 +34,7 @@ class PBPTestSystem(BaseTestSystem):
     _BPredictor = valid_bp[args.bp]
     _PerceptronDepth = args.pdepth
     _PerceptronPrime = args.pprime
+    _SaturationLimit = args.satlimit
 
 
 system = PBPTestSystem()

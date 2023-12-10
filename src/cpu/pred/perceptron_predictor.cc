@@ -4,7 +4,8 @@ PerceptronBranchPredictor::PerceptronBranchPredictor(const PerceptronBranchPredi
     : BPredUnit(params),
       perceptrons(params->perceptron_depth, Perceptron(params->perceptron_depth)),
       N(params->perceptron_depth),
-      PRIME(params->prime)
+      PRIME(params->prime),
+      LIMIT(params->saturation_limit)
 {
     if (!(isPrime(PRIME)))
         fatal("Prime is not actually a prime number.\n");
@@ -81,7 +82,8 @@ void PerceptronBranchPredictor::updatePerceptron(Addr branchAddr, bool taken, vo
     p.bias += (taken ? 1 : -1);
     for (unsigned n = 0; n < N; n++)
     {
-        p.weight[n] += ((history->taken[n] == taken) ? 1 : -1);
+        if (std::abs(p.weight[n]))
+            p.weight[n] += ((history->taken[n] == taken) ? 1 : -1);
     }
 
     insert(*history, taken);

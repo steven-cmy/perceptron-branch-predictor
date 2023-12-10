@@ -4,36 +4,6 @@
 #include "cpu/pred/bpred_unit.hh"
 #include "params/PerceptronBranchPredictor.hh"
 
-bool isPrime(int number)
-{
-    if (number <= 1)
-        return false;
-    if (number <= 3)
-        return true;
-
-    if (number % 2 == 0 || number % 3 == 0)
-        return false;
-
-    for (int i = 5; i * i <= number; i += 6)
-    {
-        if (number % i == 0 || number % (i + 2) == 0)
-            return false;
-    }
-    return true;
-}
-
-int largestPrimeLessThan(int X)
-{
-    for (int i = X; i > 1; --i)
-    {
-        if (isPrime(i))
-        {
-            return i;
-        }
-    }
-    exit(-1); // Return -1 if no prime number is found
-}
-
 class PerceptronBranchPredictor : public BPredUnit
 {
 public:
@@ -66,6 +36,7 @@ private:
     std::vector<Perceptron> perceptrons;
     unsigned N;
     unsigned PRIME;
+    unsigned LIMIT;
     unsigned hash(Addr branchAddr) { return branchAddr % this->PRIME; }
 
     bool isPrime(int number)
