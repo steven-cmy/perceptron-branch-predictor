@@ -14,6 +14,7 @@ class BaseTestSystem(System):
     _BPredictor = PerceptronBranchPredictor
     _PerceptronDepth = 64
     _PerceptronPrime = 61
+    _SaturationLimit = 32
     # _L1DCacheSize = "32kB"
     # _L1DCacheAssoc = 1
     # _L2CacheSize = "1MB"
@@ -35,6 +36,7 @@ class BaseTestSystem(System):
         if self._BPredictor is PerceptronBranchPredictor:
             self.cpu.branchPred.perceptron_depth = self._PerceptronDepth
             self.cpu.branchPred.prime = self._PerceptronPrime
+            self.cpu.branchPred.saturation_limit = self._SaturationLimit
 
         self.membus = SystemXBar()
 

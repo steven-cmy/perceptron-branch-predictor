@@ -54,11 +54,12 @@ for bm in benchmarks:
                                      "/b", 'system.cpu.branchPred.condPredicted'),
                          gem5GetStat(datadir+"/"+bm+"/"+"/"+cpu+"/"+bp +
                                      "/b", 'system.cpu.branchPred.condIncorrect'),
-                        #  gem5GetStat(datadir+"/"+bm+"/"+"/"+cpu+"/"+bp+"/b",''),
+                         gem5GetStat(datadir+"/"+bm+"/"+"/"+cpu+"/"+bp +
+                                     "/b", 'system.cpu.commit.commitSquashedInsts'),
                          ])
 
 df = pd.DataFrame(rows, columns=['benchmark', 'cpu', 'bp', 'cycles',
-                  'instructions', 'totalPrediction', 'incorrectPrediction'])
+                  'instructions', 'totalPrediction', 'incorrectPrediction','squashedInsts'])
 df['ipc'] = df['instructions']/df['cycles']
 df['cpi'] = 1/df['ipc']
 df['accuracy'] = (df['totalPrediction'] -
@@ -83,7 +84,7 @@ def doplot_benchmarks(benchmarks, stat, norm=True):
             for b, bp in enumerate(branch_predictors):
                 d = df[(df['benchmark'] == bm) & (
                     df['cpu'] == sys) & (df['bp'] == bp)]
-                print(d)
+                # print(d)
                 ax.bar(i, d[stat].iloc[0]/base, color='C'+str(c*4+b))
                 i += 1
         i += 1
@@ -96,7 +97,12 @@ def doplot_benchmarks(benchmarks, stat, norm=True):
                (len(cpu_types)*len(branch_predictors)-1)/2, new_names, rotation=40, ha='right')
 
 
-stats = ['accuracy', 'ipc']
+stats = [
+    # 'accuracy',
+    'ipc',
+    # 'cpi',
+    # 'squashedInsts'
+    ]
 for stat in stats:
     fig_size = plt.rcParams["figure.figsize"]
     fig_size[0] = 10
@@ -104,7 +110,7 @@ for stat in stats:
     plt.rcParams["figure.figsize"] = fig_size
     fig1 = doplot_benchmarks(benchmarks, stat, norm=False)
     # plt.ylabel(stat)
-    plt.legend(loc=1, prop={'size': 8})
+    plt.legend(loc=2, prop={'size': 8})
     plt.title(stat.capitalize())
     plt.tight_layout()
     plt.savefig(stat+'.png', format='png', dpi=600)

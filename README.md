@@ -35,7 +35,7 @@ scons build/X86/gem5.opt -j 8
 
 ``` bash
 # adjust benchmarks in the script if you want
-# this will take a LONG time
+# this will take ~10mins
 ./build_benchmarks.sh
 # workload instructions will be output to $REPO/bin
 ```
@@ -91,6 +91,7 @@ $M5_PATH/build/X86/gem5.opt gem5/configs/learning_gem5/part1/simple.py
 ### Testing and Evaluating
 ``` bash
 export M5_PATH=gem5
+export SPEC_PATH=spec2017
 # adjust config in the py file if needed
 python3 run_benchamrks.py 8
 # evaluation

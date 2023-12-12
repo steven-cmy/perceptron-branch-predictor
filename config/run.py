@@ -23,6 +23,10 @@ parser.add_argument('pdepth', type=int, default=64,
                     help="Depth of perceptron when using perceptron branch predictor")
 parser.add_argument('pprime', type=int, default=61,
                     help="Prime number to determine index  when using perceptron branch predictor(ideally the largest prime smaller than depth)")
+parser.add_argument('satlimit', type=int, default=32,
+                    help="Saturation limits prevent the weights from growing too large")
+parser.add_argument('warmup', type=str,
+                    help="Use warm up to train perceptron")
 parser.add_argument('workloads', type=str, help="Path to the workload to run")
 args = parser.parse_args()
 
@@ -32,6 +36,7 @@ class PBPTestSystem(BaseTestSystem):
     _BPredictor = valid_bp[args.bp]
     _PerceptronDepth = args.pdepth
     _PerceptronPrime = args.pprime
+    _SaturationLimit = args.satlimit
 
 
 system = PBPTestSystem()
@@ -47,6 +52,9 @@ wl_file = os.path.join(os.getenv('REPO'), 'bin', bm_name)
 cwd = os.path.join(os.getenv('REPO'), os.getenv('SPEC_PATH'),
                    'benchspec', 'CPU', bm_name, 'run', 'run_base_refspeed_pbptest-m64.0000'if bm_name.endswith('s') else 'run_base_refrate_pbptest-m64.0000')
 os.chdir(cwd)
+warmup = eval(args.warmup)
+checkpointdir = os.path.join(
+    os.getenv('REPO'), 'checkpoints', bm_name, args.bp)
 workloads = []
 with open(wl_file, 'r') as workloadFile:
     lines = workloadFile.readlines()
@@ -60,6 +68,9 @@ system.cpu.createThreads()
 root = Root(full_system=False, system=system)
 system.cpu.max_insts_any_thread = 2000000
 m5.instantiate()
+if warmup:
+    m5.simulate()
+    m5.stats.reset()
 
 start_tick = m5.curTick()
 start_insts = system.totalInsts()

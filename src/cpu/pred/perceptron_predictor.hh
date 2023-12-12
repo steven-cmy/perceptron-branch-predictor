@@ -36,6 +36,7 @@ private:
     std::vector<Perceptron> perceptrons;
     unsigned N;
     unsigned PRIME;
+    unsigned LIMIT;
     unsigned hash(Addr branchAddr) { return branchAddr % this->PRIME; }
     
     bool isPrime(int number)
