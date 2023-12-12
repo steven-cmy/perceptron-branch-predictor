@@ -98,10 +98,10 @@ def doplot_benchmarks(benchmarks, stat, norm=True):
 
 
 stats = [
-    # 'accuracy',
+    'accuracy',
     'ipc',
     # 'cpi',
-    # 'squashedInsts'
+    'squashedInsts'
     ]
 for stat in stats:
     fig_size = plt.rcParams["figure.figsize"]
