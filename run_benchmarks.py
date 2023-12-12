@@ -35,9 +35,9 @@ if __name__ == "__main__":
 
     cpu_types = ['DerivO3']
     branch_predictors = [
-        'LocalBP',
-        'BiModeBP',
-        'TournamentBP',
+        # 'LocalBP',
+        # 'BiModeBP',
+        # 'TournamentBP',
         'PerceptronBranchPredictor'
         ]
     # benchmarks = ["505.mcf_r","520.omnetpp_r","525.x264_r","531.deepsjeng_r","600.perlbench_s","602.gcc_s","605.mcf_s","620.omnetpp_s","625.x264_s","631.deepsjeng_s"]
@@ -52,8 +52,10 @@ if __name__ == "__main__":
             # benchmarks.append(os.path.splitext(filename)[0])
             benchmarks.append(filename)
 
-    perceptron_depth = 64
+    perceptron_depth = 512
     saturation_limit = 16
+    
+    warmup = "False" # Have to be str "True" or "False"
     
     def is_prime(n):
         if n <= 1:
@@ -85,7 +87,7 @@ if __name__ == "__main__":
                     os.getenv('REPO')+'/'+'config/run.py',
                     os.getenv('REPO')+'/'+'results/X86/run/{}/{}/{}/b'.format(
                         bm, cpu, bp),
-                    cpu, bp, str(perceptron_depth), str(largest_prime_smaller_than(perceptron_depth)), str(saturation_limit),
+                    cpu, bp, str(perceptron_depth), str(largest_prime_smaller_than(perceptron_depth)), str(saturation_limit), warmup,
                     os.path.join(bm))
                 jobs.append(run)
 
